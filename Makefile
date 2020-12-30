@@ -13,6 +13,9 @@ prebuild:
 build: prebuild
 	npm run build
 
-dev: start install
+run-migrations:
+	docker exec -it football-data-app sh -c "npm run migration:run"
+
+dev: 
 	docker exec -it football-data-app sh -c "npm run start:dev"
 	

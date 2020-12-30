@@ -1,0 +1,20 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Competition {
+  id: Float!
+  externalId: Float!
+  name: String!
+  code: String!
+  areaName: String!
+}
+
+type Query {
+  competitions: [Competition!]!
+  getCompetition(leagueCode: String!): Competition
+}
+
+type Mutation {
+  importCompetition(leagueCode: Int!): Competition!
+}
