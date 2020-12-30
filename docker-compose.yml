@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  node:
+    build: .
+    container_name: football-data-app
+    user: "node"
+    working_dir: /opt/football-data-app
+    volumes:
+      - .:/opt/football-data-app
+    environment:
+      - DATABASE_SCHEMA=${DATABASE_SCHEMA}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+      - DATABASE_PORT=3306
+      - DATABASE_HOST=mysql
+    ports:
+      - "3001:${APP_PORT}"
+    command: sh -c 'tail -f /dev/null'
+    restart: always
+    links:
+      - mysql:mysql
+    depends_on:
+        - mysql
+  mysql:
+    image: mysql:5.7
+    container_name: football-data-db
+    ports:
+        - "${DATABASE_PORT}:3306"
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+        - ./.data/mysql:/var/lib/mysql
+    networks:
+        - default
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DATABASE_SCHEMA}
+      MYSQL_USER: ${DATABASE_USER}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
