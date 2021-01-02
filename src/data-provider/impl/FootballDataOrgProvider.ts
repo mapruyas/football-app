@@ -2,7 +2,7 @@ import { Injectable, Inject, NotFoundException } from "@nestjs/common";
 import { DataProvider } from "../DataProviderInterface";
 import { AxiosInstance } from 'axios';
 import { Types } from "../../Types";
-import CompetitionInput from "src/competition/resolvers/inputs/CompetitionInput";
+import CompetitionInput from "../../competition/resolvers/inputs/CompetitionInput";
 
 @Injectable()
 export class FootballDataOrgProvider implements DataProvider {
@@ -27,8 +27,8 @@ export class FootballDataOrgProvider implements DataProvider {
             }
         });
 
-        console.log(response.data);
-        console.log(response.status);
+        // console.log(response.data);
+        // console.log(response.status);
 
         return {
             name: response.data.name,

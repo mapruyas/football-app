@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { config } from '../config';
-import { Types } from 'src/Types';
+import { Types } from '../Types';
 import { FootballDataOrgProvider } from './impl/FootballDataOrgProvider';
 import axios from 'axios';
 

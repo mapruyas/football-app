@@ -16,6 +16,9 @@ build: prebuild
 run-migrations:
 	docker exec -it football-data-app sh -c "npm run migration:run"
 
+test-e2e:
+	docker exec -it football-data-app sh -c "npm run test:e2e"
+
 dev: 
 	docker exec -it football-data-app sh -c "npm run start:dev"
 	

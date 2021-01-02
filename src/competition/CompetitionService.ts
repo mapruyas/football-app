@@ -1,10 +1,10 @@
 import { Repository } from "typeorm";
-import Competition from "src/db/models/Competition.entity";
+import Competition from "../db/models/Competition.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import CompetitionInput from "src/competition/resolvers/inputs/CompetitionInput";
-import { Injectable, Inject } from "@nestjs/common";
-import { DataProvider } from "src/data-provider/DataProviderInterface";
-import { Types } from "src/Types";
+import CompetitionInput from "../competition/resolvers/inputs/CompetitionInput";
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { DataProvider } from "../data-provider/DataProviderInterface";
+import { Types } from "../Types";
 
 @Injectable()
 export default class CompetitionService {
@@ -19,23 +19,35 @@ export default class CompetitionService {
         this.dataProvider = dataProvider
     }
 
-    async getHello(): Promise<string> {
-        return `it works! count: ${await this.competitionRepository.count()}`;
-    }
-
     async getCompetitions(): Promise<Competition[]> {
         return this.competitionRepository.find();
     }
 
     async getCompetitionByCode(code: string): Promise<Competition> {
-        return this.competitionRepository.findOne({
+        const competition = await this.competitionRepository.findOne({
             where: {
-                code
+                externalId: code
             }
         });
+
+        if (!competition) {
+          throw new NotFoundException(`Competition not found for code: ${code}`);
+        }
+
+        return competition;
     }
 
     async importCompetition(leagueCode: number): Promise<Competition> {
+        const existingCompetition = await await this.competitionRepository.findOne({
+          where: {
+            externalId: leagueCode
+          }
+        });
+
+        if (existingCompetition) {
+          return existingCompetition;
+        }
+
         const competition = await this.dataProvider.getCompetitionByCode(leagueCode);
         return this.createCompetition(competition);
     }
