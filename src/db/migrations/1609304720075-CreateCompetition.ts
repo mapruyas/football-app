@@ -14,7 +14,7 @@ export class CreateCompetition1609304720075 implements MigrationInterface {
                     generationStrategy: 'increment'
                 },
                 {
-                  name: 'externalId',
+                  name: 'external_id',
                   type: 'int',
                   unsigned: true,
                   isNullable: false
@@ -32,10 +32,22 @@ export class CreateCompetition1609304720075 implements MigrationInterface {
                     isNullable: false
                 },
                 {
-                    name: 'areaName',
+                    name: 'area_name',
                     type: 'varchar',
                     length: '45',
                     isNullable: false
+                },
+                {
+                  name: 'created_at',
+                  type: 'datetime',
+                  isNullable: false,
+                  default: 'CURRENT_TIMESTAMP'
+                },
+                {
+                  name: 'updated_at',
+                  type: 'datetime',
+                  isNullable: false,
+                  default: 'CURRENT_TIMESTAMP'
                 }
             ]
         }))

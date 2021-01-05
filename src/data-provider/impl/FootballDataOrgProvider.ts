@@ -1,8 +1,9 @@
-import { Injectable, Inject, NotFoundException } from "@nestjs/common";
-import { DataProvider } from "../DataProviderInterface";
+import { Inject, Injectable } from '@nestjs/common';
+import { DataProvider } from '../DataProviderInterface';
 import { AxiosInstance } from 'axios';
-import { Types } from "../../Types";
-import CompetitionInput from "../../competition/resolvers/inputs/CompetitionInput";
+import { Types } from '../../Types';
+import { CompetitionDTO } from '../CompetitionDTO';
+import { SeasonDTO } from '../SeasonDTO';
 
 @Injectable()
 export class FootballDataOrgProvider implements DataProvider {
@@ -18,7 +19,7 @@ export class FootballDataOrgProvider implements DataProvider {
         this.axios = axios;
     }
 
-    async getCompetitionByCode(code: number): Promise<CompetitionInput> {
+    async getCompetitionByCode(code: number): Promise<CompetitionDTO> {
         const response = await this.axios.request({
             url: `/v2/competitions/${code}`,
             method: 'get',
@@ -30,11 +31,22 @@ export class FootballDataOrgProvider implements DataProvider {
         // console.log(response.data);
         // console.log(response.status);
 
+        const competition = response.data;
+
         return {
-            name: response.data.name,
-            externalId: response.data.id,
-            code: response.data.code,
-            areaName: response.data.area.name
+            name: competition.name,
+            externalId: competition.id,
+            code: competition.code,
+            areaName: competition.area.name,
+            seasons: competition.seasons.map(s => {
+              return {
+                id: s.id,
+                startDate: s.startDate,
+                endDate: s.endDate,
+                currentMatchday: s.currentMatchday,
+                winner: null,
+              }
+            })
         };
     }
 }

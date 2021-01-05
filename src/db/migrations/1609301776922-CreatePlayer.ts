@@ -14,7 +14,7 @@ export class CreatePlayer1609301211823 implements MigrationInterface {
                     generationStrategy: 'increment'
                 },
                 {
-                  name: 'externalId',
+                  name: 'external_id',
                   type: 'int',
                   unsigned: true,
                   isNullable: false
@@ -32,7 +32,7 @@ export class CreatePlayer1609301211823 implements MigrationInterface {
                     isNullable: false
                 },
                 {
-                    name: 'countryOfBirth',
+                    name: 'country_of_birth',
                     type: 'varchar',
                     length: '45',
                     isNullable: false
@@ -44,19 +44,31 @@ export class CreatePlayer1609301211823 implements MigrationInterface {
                     isNullable: false
                 },
                 {
-                    name: 'dateOfBirth',
+                    name: 'date_of_birth',
                     type: 'datetime',
                     isNullable: false,
                 },
                 {
-                  name: 'teamId',
+                  name: 'team_id',
                   type: 'int',
                   isNullable: false
+                },
+                {
+                  name: 'created_at',
+                  type: 'datetime',
+                  isNullable: false,
+                  default: 'CURRENT_TIMESTAMP'
+                },
+                {
+                  name: 'updated_at',
+                  type: 'datetime',
+                  isNullable: false,
+                  default: 'CURRENT_TIMESTAMP'
                 }
             ], 
             foreignKeys: [
                 {
-                  columnNames: ['teamId'],
+                  columnNames: ['team_id'],
                   referencedColumnNames: ['id'],
                   referencedTableName: 'team',
                   onDelete: 'NO ACTION',
@@ -68,9 +80,8 @@ export class CreatePlayer1609301211823 implements MigrationInterface {
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         const table = await queryRunner.getTable("player");
-        const teamForeignKey = table.foreignKeys.find(fk => fk.columnNames.indexOf("teamId") !== -1);
+        const teamForeignKey = table.foreignKeys.find(fk => fk.columnNames.indexOf("team_id") !== -1);
         await queryRunner.dropForeignKey("player", teamForeignKey);
         await queryRunner.dropTable("player");
     }
-
 }

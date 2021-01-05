@@ -48,6 +48,18 @@ export class CreateTeam1609301211823 implements MigrationInterface {
                     type: 'varchar',
                     length: '45',
                     isNullable: false
+                },
+                {
+                  name: 'created_at',
+                  type: 'datetime',
+                  isNullable: false,
+                  default: 'CURRENT_TIMESTAMP'
+                },
+                {
+                  name: 'updated_at',
+                  type: 'datetime',
+                  isNullable: false,
+                  default: 'CURRENT_TIMESTAMP'
                 }
             ]
         }))

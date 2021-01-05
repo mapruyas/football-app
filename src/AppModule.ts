@@ -13,8 +13,9 @@ import CompetitionModule from './competition/CompetitionModule';
       username: config.database.user,
       password: config.database.password,
       database: config.database.name,
+      synchronize: false,
       entities: [
-        '../src/**/*.entity{.ts,.js}'
+        __dirname + '/db/**/*.entity{.ts,.js}'
       ],
       autoLoadEntities: true,
       migrationsRun: false,

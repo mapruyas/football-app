@@ -5,7 +5,7 @@ start: stop
 	docker-compose up -d
 
 install:
-	docker exec -it football-data-app sh -c "npm run start:dev"
+	docker exec -it football-data-app sh -c "npm install"
 
 prebuild:
 	npm run prebuild

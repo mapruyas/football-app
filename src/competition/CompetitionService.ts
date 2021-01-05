@@ -5,18 +5,24 @@ import CompetitionInput from "../competition/resolvers/inputs/CompetitionInput";
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { DataProvider } from "../data-provider/DataProviderInterface";
 import { Types } from "../Types";
+import SeasonService from '../season/SeasonService';
+import { CompetitionDTO } from '../data-provider/CompetitionDTO';
+import { SeasonDTO } from '../data-provider/SeasonDTO';
 
 @Injectable()
 export default class CompetitionService {
     private readonly competitionRepository: Repository<Competition>;
     private readonly dataProvider: DataProvider;
+    private readonly seasonService: SeasonService;
 
     constructor(
         @InjectRepository(Competition) competitionRepository: Repository<Competition>,
-        @Inject(Types.DataProvider) dataProvider: DataProvider
+        @Inject(Types.DataProvider) dataProvider: DataProvider,
+        seasonService: SeasonService
     ) {
         this.competitionRepository = competitionRepository;
-        this.dataProvider = dataProvider
+        this.dataProvider = dataProvider;
+        this.seasonService = seasonService;
     }
 
     async getCompetitions(): Promise<Competition[]> {
@@ -48,11 +54,21 @@ export default class CompetitionService {
           return existingCompetition;
         }
 
-        const competition = await this.dataProvider.getCompetitionByCode(leagueCode);
-        return this.createCompetition(competition);
+        const competitionDTO: CompetitionDTO = await this.dataProvider.getCompetitionByCode(leagueCode);
+        console.log(competitionDTO);
+        await this.createCompetition(competitionDTO);
+        await competitionDTO.seasons.forEach(async (s: SeasonDTO) => {
+            await this.seasonService.createSeason(s);
+        });
+
+        return this.competitionRepository.findOne({
+          where: {
+            externalId: leagueCode
+          }
+        });
     }
 
-    async createCompetition(input: CompetitionInput): Promise<Competition> {
+    async createCompetition(input: CompetitionDTO): Promise<Competition> {
         const competition = this.competitionRepository.create({
             externalId: input.externalId,
             code: input.code,

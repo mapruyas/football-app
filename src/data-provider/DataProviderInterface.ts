@@ -1,6 +1,6 @@
-import CompetitionInput from "../competition/resolvers/inputs/CompetitionInput";
+import { CompetitionDTO } from './CompetitionDTO';
 
 export interface DataProvider {
 
-    getCompetitionByCode(code: number): Promise<CompetitionInput>;
+    getCompetitionByCode(code: number): Promise<CompetitionDTO>;
 }
