@@ -68,54 +68,6 @@ export class CreateSeason1609648354265 implements MigrationInterface {
           }
         ]
       }));
-
-      await queryRunner.createTable(new Table({
-        name: 'team_seasons_season',
-        columns: [
-          {
-            name: 'season_id',
-            type: 'int',
-            isPrimary: true,
-            isNullable: false
-          },
-          {
-            name: 'team_id',
-            type: 'int',
-            isPrimary: true,
-            isNullable: false
-          },
-          {
-            name: 'created_at',
-            type: 'datetime',
-            isNullable: false,
-            default: 'CURRENT_TIMESTAMP'
-          },
-          {
-            name: 'updated_at',
-            type: 'datetime',
-            isNullable: false,
-            default: 'CURRENT_TIMESTAMP'
-          }
-        ],
-        foreignKeys: [
-          {
-            columnNames: ['season_id'],
-            referencedColumnNames: ['id'],
-            referencedTableName: 'season',
-            onDelete: 'NO ACTION',
-            onUpdate: 'NO ACTION'
-          },
-          {
-            columnNames: ['team_id'],
-            referencedColumnNames: ['id'],
-            referencedTableName: 'team',
-            onDelete: 'NO ACTION',
-            onUpdate: 'NO ACTION'
-          }
-        ]
-      }));
-
-
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
@@ -125,13 +77,5 @@ export class CreateSeason1609648354265 implements MigrationInterface {
         await queryRunner.dropForeignKey("season", teamForeignKey);
         await queryRunner.dropForeignKey("season", competitionForeignKey);
         await queryRunner.dropTable("season");
-
-        const seasonTable = await queryRunner.getTable("team_seasons_season");
-        const seasonTeamForeignKey = seasonTable.foreignKeys.find(fk => fk.columnNames.indexOf("team_id") !== -1);
-        const seasonForeignKey = seasonTable.foreignKeys.find(fk => fk.columnNames.indexOf("season_id") !== -1);
-        await queryRunner.dropForeignKey("team_seasons_season", seasonTeamForeignKey);
-        await queryRunner.dropForeignKey("team_seasons_season", seasonForeignKey);
-        await queryRunner.dropTable("team_seasons_season");
     }
-
 }

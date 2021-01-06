@@ -1,28 +1,32 @@
-import { Repository } from "typeorm";
-import Competition from "../db/models/Competition.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import CompetitionInput from "../competition/resolvers/inputs/CompetitionInput";
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import { DataProvider } from "../data-provider/DataProviderInterface";
-import { Types } from "../Types";
+import { Repository } from 'typeorm';
+import Competition from '../db/models/Competition.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Inject, Injectable } from '@nestjs/common';
+import { DataProvider } from '../data-provider/DataProviderInterface';
+import { Types } from '../Types';
 import SeasonService from '../season/SeasonService';
 import { CompetitionDTO } from '../data-provider/CompetitionDTO';
 import { SeasonDTO } from '../data-provider/SeasonDTO';
+import { TeamDTO } from '../data-provider/TeamDTO';
+import TeamService from '../team/TeamService';
 
 @Injectable()
 export default class CompetitionService {
     private readonly competitionRepository: Repository<Competition>;
     private readonly dataProvider: DataProvider;
     private readonly seasonService: SeasonService;
+    private readonly teamService: TeamService;
 
     constructor(
         @InjectRepository(Competition) competitionRepository: Repository<Competition>,
         @Inject(Types.DataProvider) dataProvider: DataProvider,
-        seasonService: SeasonService
+        seasonService: SeasonService,
+        teamService: TeamService
     ) {
         this.competitionRepository = competitionRepository;
         this.dataProvider = dataProvider;
         this.seasonService = seasonService;
+        this.teamService = teamService;
     }
 
     async getCompetitions(): Promise<Competition[]> {
@@ -30,25 +34,16 @@ export default class CompetitionService {
     }
 
     async getCompetitionByCode(code: string): Promise<Competition> {
-        const competition = await this.competitionRepository.findOne({
+        return await this.competitionRepository.findOne({
             where: {
                 externalId: code
-            }
+            },
+            relations: ['seasons', 'teams']
         });
-
-        if (!competition) {
-          throw new NotFoundException(`Competition not found for code: ${code}`);
-        }
-
-        return competition;
     }
 
-    async importCompetition(leagueCode: number): Promise<Competition> {
-        const existingCompetition = await await this.competitionRepository.findOne({
-          where: {
-            externalId: leagueCode
-          }
-        });
+    async importCompetition(leagueCode: string): Promise<Competition> {
+        const existingCompetition = await this.getCompetitionByCode(leagueCode);
 
         if (existingCompetition) {
           return existingCompetition;
@@ -56,19 +51,15 @@ export default class CompetitionService {
 
         const competitionDTO: CompetitionDTO = await this.dataProvider.getCompetitionByCode(leagueCode);
         console.log(competitionDTO);
-        await this.createCompetition(competitionDTO);
-        await competitionDTO.seasons.forEach(async (s: SeasonDTO) => {
-            await this.seasonService.createSeason(s);
-        });
 
-        return this.competitionRepository.findOne({
-          where: {
-            externalId: leagueCode
-          }
-        });
+        const competition = await this.storeCompetition(competitionDTO);
+        await this.teamService.importCompetitionTeams(competition);
+        await this.importCompetitionSeasons(competitionDTO.seasons, competition);
+
+        return this.getCompetitionByCode(leagueCode)
     }
 
-    async createCompetition(input: CompetitionDTO): Promise<Competition> {
+    async storeCompetition(input: CompetitionDTO): Promise<Competition> {
         const competition = this.competitionRepository.create({
             externalId: input.externalId,
             code: input.code,
@@ -77,5 +68,11 @@ export default class CompetitionService {
         });
 
         return this.competitionRepository.save(competition);
+    }
+
+    private async importCompetitionSeasons(seasons: SeasonDTO[], competition: Competition) {
+        for (const inputSeason of seasons) {
+          await this.seasonService.createSeason(inputSeason, competition);
+        }
     }
 }

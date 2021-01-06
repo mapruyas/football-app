@@ -4,10 +4,11 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
+  OneToMany, ManyToMany, JoinTable,
 } from 'typeorm';
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Season } from './Season.entity';
+import { Team } from './Team.entity';
 
 @ObjectType()
 @Entity('competition')
@@ -34,11 +35,19 @@ export default class Competition {
     areaName: string;
 
     @CreateDateColumn({ name: 'created_at' })
+    @Field()
     createdAt: Date;
 
     @UpdateDateColumn({ name: 'updated_at' })
+    @Field()
     updatedAt: Date;
 
     @OneToMany(() => Season, season => season.competition)
+    @Field(() => [Season])
     seasons: Season[];
+
+    @ManyToMany(() => Team, team => team.competitions)
+    @JoinTable()
+    @Field(() => [Team])
+    teams: Team[];
 }

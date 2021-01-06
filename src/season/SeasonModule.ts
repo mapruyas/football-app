@@ -3,11 +3,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Season } from '../db/models/Season.entity';
 import { DataProviderModule } from '../data-provider/DataProviderModule';
 import SeasonService from './SeasonService';
+import TeamModule from '../team/TeamModule';
 
 @Module({
     imports: [
       TypeOrmModule.forFeature([Season]),
-      DataProviderModule
+      DataProviderModule,
+      TeamModule
     ],
     providers: [SeasonService],
     exports: [SeasonService]

@@ -3,7 +3,7 @@ import { DataProvider } from '../DataProviderInterface';
 import { AxiosInstance } from 'axios';
 import { Types } from '../../Types';
 import { CompetitionDTO } from '../CompetitionDTO';
-import { SeasonDTO } from '../SeasonDTO';
+import { TeamDTO } from '../TeamDTO';
 
 @Injectable()
 export class FootballDataOrgProvider implements DataProvider {
@@ -19,7 +19,7 @@ export class FootballDataOrgProvider implements DataProvider {
         this.axios = axios;
     }
 
-    async getCompetitionByCode(code: number): Promise<CompetitionDTO> {
+    async getCompetitionByCode(code: string): Promise<CompetitionDTO> {
         const response = await this.axios.request({
             url: `/v2/competitions/${code}`,
             method: 'get',
@@ -44,9 +44,21 @@ export class FootballDataOrgProvider implements DataProvider {
                 startDate: s.startDate,
                 endDate: s.endDate,
                 currentMatchday: s.currentMatchday,
-                winner: null,
+                winner: s.winner,
               }
             })
         };
+    }
+
+    async getTeamsForCompetition(competitionId: number): Promise<TeamDTO[]> {
+      const response = await this.axios.request({
+        url: `/v2/competitions/${competitionId}/teams`,
+        method: 'get',
+        headers: {
+          'X-Auth-Token': this.apiKey
+        }
+      });
+
+      return response.data.teams;
     }
 }

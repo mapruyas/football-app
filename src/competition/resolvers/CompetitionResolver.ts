@@ -1,6 +1,7 @@
-import { Resolver, Query, Args, Mutation, Int } from "@nestjs/graphql";
+import { Resolver, Query, Args, Mutation } from "@nestjs/graphql";
 import Competition from "../../db/models/Competition.entity";
 import CompetitionService from "../CompetitionService";
+import { NotFoundException } from '@nestjs/common';
 
 @Resolver()
 export class CompetitionResolver {
@@ -17,11 +18,17 @@ export class CompetitionResolver {
 
     @Query(() => Competition, { nullable: true })
     public async getCompetition(@Args('leagueCode') code: string): Promise<Competition> {
-        return this.competitionService.getCompetitionByCode(code);
+        const competition = await this.competitionService.getCompetitionByCode(code);
+
+        if (!competition) {
+          throw new NotFoundException(`Competition not found for code: ${code}`);
+        }
+
+        return competition;
     }
 
     @Mutation(() => Competition)
-    public async importCompetition(@Args({ name: 'leagueCode', type: () => Int }) leagueCode: number): Promise<Competition> {
+    public async importCompetition(@Args({ name: 'leagueCode' }) leagueCode: string): Promise<Competition> {
         return this.competitionService.importCompetition(leagueCode);
     }
 }

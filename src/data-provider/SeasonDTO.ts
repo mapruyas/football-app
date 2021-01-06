@@ -4,6 +4,6 @@ export class SeasonDTO {
   readonly id: number;
   readonly startDate: Date;
   readonly endDate: Date;
-  readonly currentMatchDay: number;
+  readonly currentMatchday: number;
   readonly winner: TeamDTO;
 }
