@@ -6,11 +6,11 @@ type Person {
   id: Float!
   externalId: Float!
   name: String!
-  position: String!
+  position: String
   countryOfBirth: String!
   nationality: String!
   dateOfBirth: DateTime!
-  team: Team!
+  teams: [Team!]!
   role: String!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -24,13 +24,14 @@ scalar DateTime
 type Team {
   id: Float!
   externalId: Float!
-  name: String!
+  name: String
   tla: String!
-  shortName: String!
-  areaName: String!
+  shortName: String
+  areaName: String
   email: String!
   players: [Person!]!
-  competitions: [Competition!]!
+  competitions: [Competition!]
+  winnedSeasons: [Season!]!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -61,6 +62,8 @@ type Competition {
 type Query {
   competitions: [Competition!]!
   getCompetition(leagueCode: String!): Competition
+  teams: [Team!]!
+  getTeam(teamName: String!): Team
 }
 
 type Mutation {

@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { config } from '../config';
 import { Types } from '../Types';
 import { FootballDataOrgProvider } from './impl/FootballDataOrgProvider';
 import axios from 'axios';
 
 @Module({
-    imports: [],
+    imports: [CacheModule.register()],
     providers: [
         {
             provide: 'FootballDataApiKey',

@@ -7,7 +7,7 @@ import { Types } from '../Types';
 import SeasonService from '../season/SeasonService';
 import { CompetitionDTO } from '../data-provider/CompetitionDTO';
 import { SeasonDTO } from '../data-provider/SeasonDTO';
-import { TeamDTO } from '../data-provider/TeamDTO';
+import { CompetitionTeamDTO } from '../data-provider/CompetitionTeamDTO';
 import TeamService from '../team/TeamService';
 
 @Injectable()
@@ -38,7 +38,7 @@ export default class CompetitionService {
             where: {
                 externalId: code
             },
-            relations: ['seasons', 'teams']
+            relations: ['seasons', 'seasons.winner', 'teams', 'teams.competitions', 'teams.players']
         });
     }
 
@@ -50,7 +50,7 @@ export default class CompetitionService {
         }
 
         const competitionDTO: CompetitionDTO = await this.dataProvider.getCompetitionByCode(leagueCode);
-        console.log(competitionDTO);
+        //console.log(competitionDTO);
 
         const competition = await this.storeCompetition(competitionDTO);
         await this.teamService.importCompetitionTeams(competition);

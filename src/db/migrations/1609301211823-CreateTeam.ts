@@ -14,7 +14,7 @@ export class CreateTeam1609301211823 implements MigrationInterface {
                     generationStrategy: 'increment'
                 },
                 {
-                  name: 'externalId',
+                  name: 'external_id',
                   type: 'int',
                   unsigned: true,
                   isNullable: false
@@ -22,8 +22,9 @@ export class CreateTeam1609301211823 implements MigrationInterface {
                 {
                     name: 'name',
                     type: 'varchar',
-                    length: '45',
-                    isNullable: true
+                    length: '100',
+                    isNullable: false,
+                    charset: 'utf8'
                 },
                 {
                     name: 'tla',
@@ -32,22 +33,23 @@ export class CreateTeam1609301211823 implements MigrationInterface {
                     isNullable: false
                 },
                 {
-                    name: 'shortName',
+                    name: 'short_name',
                     type: 'varchar',
                     length: '45',
-                    isNullable: false
+                    isNullable: false,
+                    charset: 'utf8'
                 },
                 {
-                    name: 'areaName',
+                    name: 'area_name',
                     type: 'varchar',
                     length: '45',
-                    isNullable: false
+                    isNullable: true
                 },
                 {
                     name: 'email',
                     type: 'varchar',
                     length: '45',
-                    isNullable: false
+                    isNullable: true
                 },
                 {
                   name: 'created_at',

@@ -25,7 +25,7 @@ export class Team {
     externalId: number;
 
     @Column({ name: 'name', type: 'varchar'})
-    @Field()
+    @Field({nullable: true})
     name: string;
 
     @Column({ name: 'tla', type: 'varchar'})
@@ -33,24 +33,29 @@ export class Team {
     tla: string;
 
     @Column({ name: 'short_name', type: 'varchar'})
-    @Field()
+    @Field({nullable: true})
     shortName: string;
 
     @Column({ name: 'area_name', type: 'varchar', nullable: true})
-    @Field()
+    @Field({nullable: true})
     areaName: string;
 
     @Column({ name: 'email', type: 'varchar', nullable: true})
     @Field()
     email: string;
 
-    @OneToMany(() => Person, player => player.team)
+    @ManyToMany(() => Person, player => player.teams)
+    @JoinTable()
     @Field(type => [Person])
     players: Person[];
 
     @ManyToMany(() => Competition, competition => competition.teams)
-    @Field(() => [Competition])
+    @Field(() => [Competition], {nullable: true})
     competitions: Competition[];
+
+    @OneToMany(() => Season, season => season.winner)
+    @Field(() => [Season])
+    winnedSeasons: Season[];
 
     @CreateDateColumn({ name: 'created_at' })
     @Field()

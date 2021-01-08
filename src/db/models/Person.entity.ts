@@ -1,15 +1,29 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToMany,
+} from 'typeorm';
 import { Team } from './Team.entity';
 import { Field, ObjectType } from '@nestjs/graphql';
 
 export enum Role {
   PLAYER = 'player',
   COACH = 'coach',
-  REFEREE = 'referee'
+  REFEREE = 'referee',
+  ASSISTANT_COACH = 'assistant_coach',
+  GOALKEEPER_COACH = 'goalkeeper_coach',
+  INTERIM_COACH = 'interim_coach',
+  LOCAL_COACH = 'local_coach',
+  ASSISTANT_TEAM_MANAGER = 'assistant_team_manager',
+  SCOUT = 'scout'
 }
 
 @ObjectType()
-@Entity('player')
+@Entity('person')
 export class Person {
 
     @PrimaryGeneratedColumn()
@@ -24,27 +38,27 @@ export class Person {
     @Field()
     name: string;
 
-    @Column({ name: 'position', type: 'varchar'})
-    @Field()
+    @Column({ name: 'position', type: 'varchar', nullable: true})
+    @Field({nullable: true})
     position: string;
 
-    @Column({ name: 'country_of_birth', type: 'varchar'})
+    @Column({ name: 'country_of_birth', type: 'varchar', nullable: true})
     @Field()
     countryOfBirth: string;
 
-    @Column({ name: 'nationality', type: 'varchar'})
+    @Column({ name: 'nationality', type: 'varchar', nullable: true})
     @Field()
     nationality: string;
 
-    @Column({ name: 'date_of_birth', type: 'datetime'})
+    @Column({ name: 'date_of_birth', type: 'datetime', nullable: true})
     @Field()
     dateOfBirth: Date;
 
-    @ManyToOne(() => Team, team => team.players)
-    @Field(type => Team)
-    team: Team;
+    @ManyToMany(() => Team, team => team.players)
+    @Field(type => [Team])
+    teams: Team[];
 
-    @Column({ name: 'role', type: 'enum', enum: Role})
+    @Column({ name: 'role', type: 'enum', enum: Role, nullable: true})
     @Field()
     role: Role;
 

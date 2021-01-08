@@ -1,10 +1,11 @@
 import {MigrationInterface, QueryRunner, Table} from "typeorm";
+import { Role } from '../models/Person.entity';
 
 export class CreatePlayer1609301211823 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(new Table({
-            name: 'player',
+            name: 'person',
             columns: [
                 {
                     name: 'id',
@@ -23,13 +24,14 @@ export class CreatePlayer1609301211823 implements MigrationInterface {
                     name: 'name',
                     type: 'varchar',
                     length: '45',
-                    isNullable: true
+                    isNullable: true,
+                    charset: 'utf8'
                 },
                 {
                     name: 'position',
                     type: 'varchar',
                     length: '45',
-                    isNullable: false
+                    isNullable: true
                 },
                 {
                     name: 'country_of_birth',
@@ -41,16 +43,18 @@ export class CreatePlayer1609301211823 implements MigrationInterface {
                     name: 'nationality',
                     type: 'varchar',
                     length: '45',
-                    isNullable: false
+                    isNullable: false,
+                    charset: 'utf8'
                 },
                 {
                     name: 'date_of_birth',
                     type: 'datetime',
-                    isNullable: false,
+                    isNullable: true,
                 },
                 {
-                  name: 'team_id',
-                  type: 'int',
+                  name: 'role',
+                  type: 'enum',
+                  enum: [Role.PLAYER, Role.COACH, Role.REFEREE, Role.ASSISTANT_COACH, Role.GOALKEEPER_COACH, Role.INTERIM_COACH, Role.LOCAL_COACH, Role.ASSISTANT_TEAM_MANAGER, Role.SCOUT],
                   isNullable: false
                 },
                 {
@@ -65,17 +69,54 @@ export class CreatePlayer1609301211823 implements MigrationInterface {
                   isNullable: false,
                   default: 'CURRENT_TIMESTAMP'
                 }
-            ], 
-            foreignKeys: [
-                {
-                  columnNames: ['team_id'],
-                  referencedColumnNames: ['id'],
-                  referencedTableName: 'team',
-                  onDelete: 'NO ACTION',
-                  onUpdate: 'NO ACTION'
-                }
             ]
-        }))
+        }));
+
+      await queryRunner.createTable(new Table({
+        name: 'team_players_person',
+        columns: [
+          {
+            name: 'personId',
+            type: 'int',
+            isPrimary: true,
+            isNullable: false
+          },
+          {
+            name: 'teamId',
+            type: 'int',
+            isPrimary: true,
+            isNullable: false
+          },
+          {
+            name: 'created_at',
+            type: 'datetime',
+            isNullable: false,
+            default: 'CURRENT_TIMESTAMP'
+          },
+          {
+            name: 'updated_at',
+            type: 'datetime',
+            isNullable: false,
+            default: 'CURRENT_TIMESTAMP'
+          }
+        ],
+        foreignKeys: [
+          {
+            columnNames: ['personId'],
+            referencedColumnNames: ['id'],
+            referencedTableName: 'person',
+            onDelete: 'NO ACTION',
+            onUpdate: 'NO ACTION'
+          },
+          {
+            columnNames: ['teamId'],
+            referencedColumnNames: ['id'],
+            referencedTableName: 'team',
+            onDelete: 'NO ACTION',
+            onUpdate: 'NO ACTION'
+          }
+        ]
+      }));
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

@@ -39,7 +39,7 @@ export class Season {
   @Field()
   updatedAt: Date;
 
-  @OneToOne(() => Team)
+  @ManyToOne(() => Team, team => team.winnedSeasons)
   @JoinColumn({
     name: 'winner_id',
     referencedColumnName: 'id'

@@ -56,13 +56,13 @@ export class CreateCompetition1609304720075 implements MigrationInterface {
           name: 'competition_teams_team',
           columns: [
             {
-              name: 'competition_id',
+              name: 'competitionId',
               type: 'int',
               isPrimary: true,
               isNullable: false
             },
             {
-              name: 'team_id',
+              name: 'teamId',
               type: 'int',
               isPrimary: true,
               isNullable: false
@@ -82,14 +82,14 @@ export class CreateCompetition1609304720075 implements MigrationInterface {
           ],
           foreignKeys: [
             {
-              columnNames: ['competition_id'],
+              columnNames: ['competitionId'],
               referencedColumnNames: ['id'],
               referencedTableName: 'competition',
               onDelete: 'NO ACTION',
               onUpdate: 'NO ACTION'
             },
             {
-              columnNames: ['team_id'],
+              columnNames: ['teamId'],
               referencedColumnNames: ['id'],
               referencedTableName: 'team',
               onDelete: 'NO ACTION',
@@ -101,8 +101,8 @@ export class CreateCompetition1609304720075 implements MigrationInterface {
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         const competitionTable = await queryRunner.getTable("competition_teams_team");
-        const competitionTeamForeignKey = competitionTable.foreignKeys.find(fk => fk.columnNames.indexOf("team_id") !== -1);
-        const competitionForeignKey = competitionTable.foreignKeys.find(fk => fk.columnNames.indexOf("competition_id") !== -1);
+        const competitionTeamForeignKey = competitionTable.foreignKeys.find(fk => fk.columnNames.indexOf("teamId") !== -1);
+        const competitionForeignKey = competitionTable.foreignKeys.find(fk => fk.columnNames.indexOf("competitionId") !== -1);
         await queryRunner.dropForeignKey("competition_teams_team", competitionTeamForeignKey);
         await queryRunner.dropForeignKey("competition_teams_team", competitionForeignKey);
         await queryRunner.dropTable("competition_teams_team");
