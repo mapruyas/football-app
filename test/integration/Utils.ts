@@ -5,7 +5,7 @@ export class Utils {
   }
 
   static getImportCompetitionMutationForLeagueCode(leagueCode: string): string {
-    return `mutation {importCompetition(leagueCode: ${leagueCode}) {id name externalId code areaName}}`
+    return `mutation {importCompetition(leagueCode: "${leagueCode}") {id name externalId code areaName}}`
   }
 
   static getAllCompetitionsQuery(): string {

@@ -75,6 +75,7 @@ describe('Competition tests (e2e)', () => {
         query: Utils.getImportCompetitionMutationForLeagueCode('2000')
       });
 
+      console.log(response.body)
     expect(response.status).toBe(200);
 
     const getCompetitionsResponse = await  request(app.getHttpServer())

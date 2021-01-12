@@ -1,73 +1,57 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# Nodejs Challenge Santex
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Framework used
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+### Nestjs https://docs.nestjs.com/
 
-## Description
+Nestjs is a framework that helps you setup a nodejs with Typescrip(if you want) very quickly with some advanced features that also helps you to reduce boilerplate code like, dependency injection, authorization/authentication to name some of the most important.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+One of the features shown in the code about dependency injection and Typescript is the ability to completly detach the domain/bussines logic from the actual implementation. In this case we are using an interface DataProvider.ts to return the needed data for the domain, actual implementation is the football-api that the challenge is asking to use, but can easily be changed with another without having to change any piece of code in the domain/bussines logic.
 
-## Installation
+The same principle can be use to detach the database, in this case I choose a widely used relation DB, mysql and Typeorm framwork to intercat with the db. Typeorm can be used with the Repository pattern, which also helps to detach domain/bussines logic from db, allowing us to do several things without changing domain/bussines logic if we need to, like:
+- change db implementation
+- decorate and incorporate caches
+- migrate to another db
 
-```bash
-$ npm install
-```
+#### Tests
 
-## Running the app
+Using Typescript and receiving external dependencies of classes like in this project, allows you to easily mock and unit test you classes.
 
-```bash
-# development
-$ npm run start
+Project currently has integration tests, which are different than unit tests but they are also important and a very usefull way to identify bugs in your code. 
 
-# watch mode
-$ npm run start:dev
 
-# production mode
-$ npm run start:prod
-```
+## How to run
 
-## Test
+The project includes some docker files and a Makefile to make it easy to setup a development envirnonment and have the tests and api running.
 
-```bash
-# unit tests
-$ npm run test
+For the first time, run `make build-dev`. It will configurate and build the docker environment, install the project, run database migrations and start the api.
 
-# e2e tests
-$ npm run test:e2e
+## Rate limit of football data org
 
-# test coverage
-$ npm run test:cov
-```
+The solution to the limit of a free api currently is being solve in a not very elegant way, the code is just waiting a minute if we hit the limit, and the trying the requests again. I think there are two possible solutions for this, but this was in my mind the simple one to implement.
 
-## Support
+### Having several free keys
+Have a array of free keys, and store in memory (can be redis if we have more than one node running) a key with an expiration of 1 minute for each key that reaches the limit. If the key exists in the cache, then is not able to be used and we should use another one.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Only importing data when requested
+Importing persons that belongs to a team is a problem for a free api key, because a competition contains several teams, which is why we are reaching the limit of 10 requests per minute. We can not import persons of a team, until team detail is asked. So when a query is made to return persons of a team, we can import the team information there if it not exists, and the return info from db. That will improve the importLeague mutation to be fast and not reach the limit.
 
-## Stay in touch
+## Makefile commands
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+After `make buid-dev`, any time you need to use this env can be started with `make start`
 
-## License
+### Run api for development
 
-Nest is [MIT licensed](LICENSE).
+run `make dev` to start the api with a watcher so any change in the files will trigger a re-run of the api. Usefull for development
+
+### Tests
+
+test can be run with `make test-e2e` 
+
+### Database migrations
+
+migrations can be run with `make run-migrations`
+
+### Config
+
+.env.docker contains the needed configuration for the docker env. `make config` will simply copy that to `.env` file.

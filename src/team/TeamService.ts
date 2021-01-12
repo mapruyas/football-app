@@ -28,7 +28,7 @@ export default class TeamService {
       for (const inputTeam of teamDTOs) {
           const team = await this.createTeamIfNotExists(inputTeam);
           await this.addCompetition(team, competition);
-          // await this.personService.importTeamSquad(team);
+          await this.personService.importTeamSquad(team);
       }
   }
 
@@ -80,7 +80,9 @@ export default class TeamService {
   }
 
   async getTeams(): Promise<Team[]> {
-    return this.teamRepository.find();
+    return this.teamRepository.find({
+      relations: ['players']
+    });
   }
 
   async getTeamByName(name: string): Promise<Team | null> {
